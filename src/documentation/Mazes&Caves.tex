@@ -1,0 +1,215 @@
+%% LyX 2.3.6 created this file.  For more info, see http://www.lyx.org/.
+%% Do not edit unless you really know what you are doing.
+\documentclass[english]{article}
+\usepackage[T1]{fontenc}
+\usepackage[latin9]{inputenc}
+\usepackage{color}
+
+\makeatletter
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
+\usepackage{babel}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+\makeatother
+
+\usepackage{babel}
+\begin{document}
+\title{\texttt{\textbf{Mazes \& Caves Manual}}}
+\author{by JakeTheSillySnake (@ginzburg\_jake on Telegram)}
+\date{Last updated March 2025}
+
+\maketitle
+\tableofcontents{}
+
+\section{Introduction}
+
+This document describes how to install, run, check and remove Maze
+on Linux and Unix-like systems. Please note that the program was written
+and tested on Ubuntu 22.04 LTS, so its behaviour may differ if you
+use other versions or OS distributions. It should work on Windows
+if you build with MinGW and qmake, but the UI may be wonky.
+
+\section{Installation \& Running}
+
+\subsection{Prerequisites}
+
+Correct compilation and running of the program depends on other utilities
+and libraries. Check that you have their latest versions before proceeding: 
+\begin{description}
+\item [{App~Compilation~\&~Running}] gcc, make, Qt5+ 
+\item [{Testing}] GTest library 
+\item [{GCOV~Report}] gcov, lcov 
+\item [{Leaks~Check}] valgrind 
+\item [{Convert~Manual~to~DVI}] texi2dvi 
+\end{description}
+
+\subsection{Setup}
+
+Download or clone (\texttt{git clone <link\_to\_repo>}) the source
+repository to where you can easily find it. Then type and run the
+following commands in the terminal: 
+\begin{enumerate}
+\item \texttt{cd <path-to-git-folder>/src/maze} 
+\item \texttt{make install} 
+\end{enumerate}
+Now the program is compiled, placing the app in a folder named \texttt{src/build/}.
+The app should open automatically. If you want to open it later using
+command line, run\texttt{ make maze.} If there are errors, you're
+likely missing some packages. Check \textbf{Prerequisites}.
+
+\subsection{Formatting}
+
+The maze is stored in a file as a number of rows and columns, as well
+as two matrices containing the positions of vertical and horizontal
+walls respectively. The first matrix shows the wall to the right of
+each cell, and the second --- the wall at the bottom. An example
+of such a file:
+
+~
+
+\textcolor{black}{4 4 }
+
+\textcolor{black}{0 0 0 1 }
+
+\textcolor{black}{1 0 1 1 }
+
+\textcolor{black}{0 1 0 1 }
+
+\textcolor{black}{0 0 0 1}
+
+\textcolor{black}{~}
+
+\textcolor{black}{1 0 1 0 }
+
+\textcolor{black}{0 0 1 0 }
+
+\textcolor{black}{1 1 0 1 }
+
+\textcolor{black}{1 1 1 1}
+
+~
+
+A cave that has passed 0 simulation steps (only initialized) is stored
+as a number of rows and columns, as well as a matrix containing the
+positions of 'alive' and 'dead' cells. For example:
+
+~
+
+4 4 
+
+0 1 0 1 
+
+1 0 0 1 
+
+0 1 0 0 
+
+0 0 1 1
+
+~
+
+\subsection{Usage}
+
+The app layout should be fairly intuitive. On the first load, you'll
+see a horizontal \textbf{Menu Tab} plus an \textbf{Action Tab} on
+the right side of the screen. The \textbf{Menu Tab->File} has the
+following options: 
+\begin{enumerate}
+\item Upload~Maze --- \emph{choose .txt maze file to display }
+\item Upload~Cave --- \emph{choose .txt cave file to display} 
+\item Save~Maze --- \emph{save current maze as .txt file in the format
+described above}
+\item Exit --- \emph{close the app} 
+\end{enumerate}
+The \textbf{Action Tab }allows you to switch between \textbf{Maze}
+and \textbf{Cave}, which changes the options currently available:
+\begin{enumerate}
+\item \textbf{Maze}
+\begin{enumerate}
+\item Rows \& Cols Boxes --- \emph{dimensions for a maze to be generated
+(1 to 50)}
+\item Generate Button --- \emph{generate and display a 'perfect' maze}\footnote{i.e. maze without inaccessible areas or loops, where only one path
+exists between any two points}\emph{ using Eller's algorithm}
+\item Save Button --- \emph{save current maze as .txt file in the format
+described above}
+\item Start \& End Boxes --- \emph{position of start \& end points of a
+maze solution (row, column)}
+\item Solve Button --- \emph{solve current maze}
+\end{enumerate}
+\item \textbf{Cave}
+\begin{enumerate}
+\item Rows \& Cols Boxes --- \emph{dimensions for a cave to be generated
+(1 to 50)}
+\item Cell Initialisation (\%) --- \emph{chance of individual cell in the
+first generation being initialised (1-99\%; 50\% recommended)}
+\item Generate Button --- \emph{generate and display initialised cave}
+\item Next Step --- \emph{generate next step for current cave using cellular
+automation (disabled when }\textbf{\textsl{\emph{Automode}}}\emph{
+is on)}
+\item Birth Limit --- \emph{lower limit of 'alive' neighbours a 'dead'
+cell needs to be 'born' (0-7; 5 recommended)}
+\item Death Limit --- \emph{lower limit of 'alive' neighbours 'alive' cell
+needs to stay 'alive' (0-7; 4 recommended)}
+\item Automode Button --- \emph{enables automatic next step generation}
+\item Hold Frame For (ms) --- \emph{generate next step every N ms (40-2000,
+200 recommended; disabled when }\textbf{\textsl{\emph{Automode}}}\emph{
+is off)}
+\end{enumerate}
+\end{enumerate}
+
+\subsection{Web UI}
+
+Additionally, you can use the app without installing it, through a
+local server. The web version of UI was built using WebAssembly and
+Emscripten Compiler. To open it, go to the \texttt{src/maze/web\_ui}
+folder and then:
+\begin{itemize}
+\item Open \texttt{maze.html} using Live Server extension in VS Code, OR
+\item Run \texttt{\textcolor{black}{python}}\footnote{\texttt{\textcolor{black}{python3 in newer Unix-versions, or py on
+Windows}}}\texttt{\textcolor{black}{{} -m http.server}} inside the folder (you
+need to have Python installed)
+\end{itemize}
+Then go to \texttt{\textcolor{black}{localhost/maze.html}} address
+in your preferred browser. Done!
+
+\section{Structure \& testing}
+
+The program was made using C++17 language and standard libraries,
+with the interface provided by Qt. The source code can be found in
+\texttt{maze/backend} and \texttt{maze/frontend} folders. The backend
+modules can be tested with GTest: 
+\begin{enumerate}
+\item To run tests:\texttt{ make test} 
+\item To display test coverage:\texttt{ make gcov\_report} 
+\item To check for leaks: \texttt{make valgrind } 
+\end{enumerate}
+Running \texttt{make} or \texttt{make all} will reinstall and compile
+the program. You can get DVI documentation with \texttt{make dvi}
+or a distribution .tar.gz package with \texttt{make dist}. Also note: 
+\begin{enumerate}
+\item Not every maze and cave can be displayed by the app. Check \textbf{Formatting}.
+\item Example files can be found in \texttt{src/assets/example\_files}.
+\end{enumerate}
+
+\section{Deinstallation}
+
+Simply run \texttt{make uninstall.} This will remove the \texttt{build/}
+directory but not the original download, which can be safely deleted
+afterwards.
+
+\subparagraph{If you wish to suggest an improvement or report a bug, contact me
+@ginzburg\_jake (Telegram) or JakeTheSillySnake (GitHub).}
+\end{document}

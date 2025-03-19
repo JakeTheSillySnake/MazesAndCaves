@@ -10,10 +10,20 @@ CONFIG += c++17
 
 SOURCES += \
     main.cpp \
-    maze.cpp
+    maze_basics.cpp \
+    maze_draw.cpp \
+    maze_input.cpp \
+    ../backend/model.cpp \
+    ../backend/genMaze.cpp \
+    ../backend/genCave.cpp \
+    ../backend/solveMaze.cpp
 
 HEADERS += \
-    maze.h
+    maze.h \
+    ../backend/model.h \
+    ../backend/genMaze.h \
+    ../backend/genCave.h \
+    ../backend/solveMaze.h
 
 FORMS += \
     maze.ui

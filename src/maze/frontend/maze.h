@@ -1,28 +1,77 @@
 #ifndef MAZE_H
 #define MAZE_H
 
-#include <QMainWindow>
-#include <QFontDatabase>
-#include <QFileInfo>
 #include <QDebug>
+#include <QDialog>
+#include <QDialogButtonBox>
+#include <QErrorMessage>
+#include <QFileDialog>
+#include <QFileInfo>
+#include <QFontDatabase>
+#include <QFormLayout>
+#include <QGraphicsPathItem>
+#include <QGraphicsScene>
+#include <QLineEdit>
+#include <QMainWindow>
+#include <QPainterPath>
+#include <QTimer>
+
+#include "../backend/genCave.h"
+#include "../backend/genMaze.h"
+#include "../backend/solveMaze.h"
 
 QT_BEGIN_NAMESPACE
-namespace Ui { class Maze; }
+namespace Ui {
+class Maze;
+}
 QT_END_NAMESPACE
 
-class Maze : public QMainWindow
-{
+class Maze : public QMainWindow {
   Q_OBJECT
 
-public:
+ public:
+  const float sceneSize = 500;
+  const float lineW = 2;
+  const float sizeMax = 9.9;
+  const float mazeMax = 50;
+
   Maze(QWidget *parent = nullptr);
   ~Maze();
 
   void loadFont();
   void connectSlots();
+  void setScene();
+  void errorMessage(int code);
+  void drawField(int mode);
+  void drawSolution(int start_r, int start_c, std::vector<pair<int, int>> path);
+  void loadFile(int mode);
+  void setTimer();
 
-private:
+ private slots:
+  void loadMaze();
+  void loadCave();
+  void solveMazeIn();
+  void genMazeIn();
+  void genCaveIn();
+  void genNext();
+  void saveMaze();
+  void updateBirthVal();
+  void updateDeathVal();
+  void toggleAutomode();
+  void switchTab();
+  void timerAlarm();
+
+ private:
   Ui::Maze *ui;
   QFont *font;
+  Input maze;
+  Input cave;
+  QErrorMessage *msg;
+  QGraphicsScene *scene;
+  QTimer *timer;
+  int automode = 0;
+  int solved = 0;
+  std::vector<std::pair<int, int>> solution;
+  std::pair<int, int> endPoint;
 };
-#endif // MAZE_H
+#endif  // MAZE_H
