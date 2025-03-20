@@ -13,7 +13,6 @@ SOURCES += \
     maze_basics.cpp \
     maze_draw.cpp \
     maze_input.cpp \
-    ../backend/model.cpp \
     ../backend/genMaze.cpp \
     ../backend/genCave.cpp \
     ../backend/solveMaze.cpp

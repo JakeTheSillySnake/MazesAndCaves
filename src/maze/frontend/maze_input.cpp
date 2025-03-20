@@ -1,42 +1,101 @@
 #include "maze.h"
 #include "ui_maze.h"
 
-void Maze::loadMaze() { loadFile(MAZE_MODE); }
-
-void Maze::loadCave() {
-  loadFile(CAVE_MODE);
-  ui->NextStepButton->setDisabled(true);
-}
-
-void Maze::loadFile(int mode) {
-  QString filename = QFileDialog::getOpenFileName(
-      0, QObject::tr("Open File"), QDir::currentPath(), QObject::tr("*txt"));
-  QString fullName = QFileInfo(filename).absoluteFilePath();
-  auto path = fullName.toLocal8Bit().data();
-  int error = 0;
-  Input tmp;
-  if (!filename.isEmpty()) {
-    if (mode == MAZE_MODE) {
-      tmp = maze;
-      error = maze.uploadFile(path, MAZE_MODE);
-      ui->tabWidget->setCurrentIndex(0);
-    } else {
-      tmp = cave;
-      error = cave.uploadFile(path, CAVE_MODE);
-      ui->tabWidget->setCurrentIndex(1);
-    }
+void Maze::loadMaze() {
+  auto fileContentReady = [this](const QString &filePath,
+                                 const QByteArray &fileContent) {
+    if (filePath.isEmpty()) return;
+    Input tmp = maze;
+    QString fullName = QFileInfo(filePath).absoluteFilePath();
+    maze.filename = fullName.toLocal8Bit().data();
+    int error = uploadFile(fileContent, MAZE_MODE, &maze);
     if (error) {
       errorMessage(error);
-      if (mode == MAZE_MODE)
-        maze = tmp;
-      else
-        cave = tmp;
+      maze = tmp;
     } else {
-      drawField(mode);
+      drawField(MAZE_MODE);
       ui->SolveButton->setDisabled(false);
-      if (mode == MAZE_MODE) solved = 0;
+      solved = 0;
+    }
+    ui->tabWidget->setCurrentIndex(0);
+  };
+  QFileDialog::getOpenFileContent("*.txt", fileContentReady);
+}
+
+void Maze::loadCave() {
+  auto fileContentReady = [this](const QString &filePath,
+                                 const QByteArray &fileContent) {
+    if (filePath.isEmpty()) return;
+    Input tmp = cave;
+    QString fullName = QFileInfo(filePath).absoluteFilePath();
+    cave.filename = fullName.toLocal8Bit().data();
+    int error = uploadFile(fileContent, CAVE_MODE, &cave);
+    if (error) {
+      errorMessage(error);
+      cave = tmp;
+    } else {
+      drawField(CAVE_MODE);
+      ui->NextStepButton->setDisabled(true);
+    }
+    ui->tabWidget->setCurrentIndex(1);
+  };
+  QFileDialog::getOpenFileContent("*.txt", fileContentReady);
+}
+
+int Maze::uploadFile(QByteArray fileContent, int mode, Input *model) {
+  model->clear();
+  if (fileContent.isEmpty()) return EMPTY;
+  QTextStream data(fileContent);
+  data >> model->row >> model->col;
+  if (model->row < 1 || model->col < 1 || model->row > 50 || model->col > 50)
+    return BAD_FORMAT;
+  if (mode == MAZE_MODE)
+    return uploadMaze(data, model);
+  else
+    return uploadCave(data, model);
+}
+
+int Maze::uploadMaze(QTextStream &data, Input *model) {
+  model->borderX = new int *[model->row];
+  model->borderY = new int *[model->row];
+  for (int i = 0; i < model->row; i++) {
+    model->borderY[i] = new int[model->col];
+    model->borderX[i] = new int[model->col];
+  }
+  for (int i = 0; i < model->row; i++) {
+    for (int j = 0; j < model->col; j++) {
+      data >> model->borderX[i][j];
+      if ((model->borderX[i][j] != 1 && model->borderX[i][j] != 0) ||
+          data.status() != QTextStream::Ok) {
+        return BAD_DATA;
+      }
     }
   }
+  for (int i = 0; i < model->row; i++) {
+    for (int j = 0; j < model->col; j++) {
+      data >> model->borderY[i][j];
+      if ((model->borderY[i][j] != 1 && model->borderY[i][j] != 0) ||
+          data.status() != QTextStream::Ok) {
+        return BAD_DATA;
+      }
+    }
+  }
+  return 0;
+}
+
+int Maze::uploadCave(QTextStream &data, Input *model) {
+  model->tmp = new int *[model->row];
+  for (int i = 0; i < model->row; i++) model->tmp[i] = new int[model->col];
+  for (int i = 0; i < model->row; i++) {
+    for (int j = 0; j < model->col; j++) {
+      data >> model->tmp[i][j];
+      if ((model->tmp[i][j] != 1 && model->tmp[i][j] != 0) ||
+          data.status() != QTextStream::Ok) {
+        return BAD_DATA;
+      }
+    }
+  }
+  return 0;
 }
 
 void Maze::genMazeIn() {
@@ -59,50 +118,27 @@ void Maze::genNext() {
 }
 
 void Maze::saveMaze() {
-  QString filename = QFileDialog::getSaveFileName(
-      0, "Save file", QString("%1/maze.txt").arg(QDir::currentPath()), ".txt");
-  if (filename.isEmpty()) return;
-  auto path = filename.toLocal8Bit().data();
-  maze.saveFile(path);
-}
-
-void Maze::updateBirthVal() {
-  ui->BirthLabel->setNum(ui->SliderBirth->value());
-  ui->BirthLabel->setAlignment(Qt::AlignCenter);
-}
-
-void Maze::updateDeathVal() {
-  ui->DeathLabel->setNum(ui->SliderDeath->value());
-  ui->DeathLabel->setAlignment(Qt::AlignCenter);
-}
-
-void Maze::toggleAutomode() {
-  if (ui->AutomodeButton->isChecked()) {
-    ui->FrameBox->setDisabled(false);
-    ui->FrameSpeedLabel->setText(
-        tr("<p style='color:white;font-size:10pt;'>Hold Frame For:</p>"));
-    ui->NextStepButton->setDisabled(true);
-    automode = 1;
-    setTimer();
-  } else {
-    ui->FrameBox->setDisabled(true);
-    ui->FrameSpeedLabel->setText(
-        tr("<p style='color:gray;font-size:10pt;'>Hold Frame For:</p>"));
-    if (cave.tmp && cave.filename == "") ui->NextStepButton->setDisabled(false);
-    automode = 0;
+  QByteArray fileContent;
+  fileContent.append(QByteArray::number(maze.row));
+  fileContent.append(" ");
+  fileContent.append(QByteArray::number(maze.col));
+  fileContent.append("\n");
+  for (int i = 0; i < maze.row; i++) {
+    for (int j = 0; j < maze.col; j++) {
+      fileContent.append(QByteArray::number(maze.borderX[i][j]));
+      fileContent.append(" ");
+    }
+    fileContent.append("\n");
   }
-  ui->FrameSpeedLabel->setAlignment(Qt::AlignCenter);
-}
-
-void Maze::switchTab() {
-  qDebug() << maze.row << maze.col;
-  if (ui->tabWidget->currentIndex() == 0 && maze.borderX) {
-    drawField(MAZE_MODE);
-    if (solved) drawSolution(endPoint.first, endPoint.second, solution);
-  } else if (ui->tabWidget->currentIndex() == 1 && cave.tmp)
-    drawField(CAVE_MODE);
-  else
-    drawField(EMPTY_MODE);
+  fileContent.append("\n");
+  for (int i = 0; i < maze.row; i++) {
+    for (int j = 0; j < maze.col; j++) {
+      fileContent.append(QByteArray::number(maze.borderY[i][j]));
+      fileContent.append(" ");
+    }
+    fileContent.append("\n");
+  }
+  QFileDialog::saveFileContent(fileContent, "maze.txt");
 }
 
 void Maze::setTimer() {

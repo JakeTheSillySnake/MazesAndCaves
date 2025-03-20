@@ -62,4 +62,42 @@ void Maze::errorMessage(int code) {
     msg->showMessage("Oops! Couldn't process this file.");
 }
 
+void Maze::updateBirthVal() {
+  ui->BirthLabel->setNum(ui->SliderBirth->value());
+  ui->BirthLabel->setAlignment(Qt::AlignCenter);
+}
+
+void Maze::updateDeathVal() {
+  ui->DeathLabel->setNum(ui->SliderDeath->value());
+  ui->DeathLabel->setAlignment(Qt::AlignCenter);
+}
+
+void Maze::toggleAutomode() {
+  if (ui->AutomodeButton->isChecked()) {
+    ui->FrameBox->setDisabled(false);
+    ui->FrameSpeedLabel->setText(
+        tr("<p style='color:white;font-size:10pt;'>Hold Frame For:</p>"));
+    ui->NextStepButton->setDisabled(true);
+    automode = 1;
+    setTimer();
+  } else {
+    ui->FrameBox->setDisabled(true);
+    ui->FrameSpeedLabel->setText(
+        tr("<p style='color:gray;font-size:10pt;'>Hold Frame For:</p>"));
+    if (cave.tmp && cave.filename == "") ui->NextStepButton->setDisabled(false);
+    automode = 0;
+  }
+  ui->FrameSpeedLabel->setAlignment(Qt::AlignCenter);
+}
+
+void Maze::switchTab() {
+  if (ui->tabWidget->currentIndex() == 0 && maze.borderX) {
+    drawField(MAZE_MODE);
+    if (solved) drawSolution(endPoint.first, endPoint.second, solution);
+  } else if (ui->tabWidget->currentIndex() == 1 && cave.tmp)
+    drawField(CAVE_MODE);
+  else
+    drawField(EMPTY_MODE);
+}
+
 Maze::~Maze() { delete ui; }

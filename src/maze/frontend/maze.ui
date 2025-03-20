@@ -454,7 +454,7 @@ background-color: rgb(0, 0, 0);</string>
        <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Start:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p style=&quot;font:10pt;&quot;&gt;Start:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QLabel" name="SolveEndLabel">
@@ -470,7 +470,7 @@ background-color: rgb(0, 0, 0);</string>
        <string notr="true">background: transparent;</string>
       </property>
       <property name="text">
-       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;End:&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+       <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:10pt;&quot;&gt;End:&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
       </property>
      </widget>
      <widget class="QPushButton" name="SolveButton">
@@ -1114,7 +1114,7 @@ font: 16px;</string>
      <x>0</x>
      <y>0</y>
      <width>666</width>
-     <height>20</height>
+     <height>25</height>
     </rect>
    </property>
    <property name="baseSize">

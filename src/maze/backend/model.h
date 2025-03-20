@@ -15,8 +15,10 @@ enum errors { EMPTY = 1, BAD_DATA, BAD_FORMAT, NO_SOLUTION };
 
 class Input {
  public:
-  Input(){};
-  ~Input() { clear(); };
+  Input() {}
+  ~Input() { clear(); }
+
+  // copy constructor
   Input(const Input &in) : col(in.col), row(in.row), filename(in.filename) {
     if (in.tmp) {
       tmp = new int *[row];
@@ -42,6 +44,7 @@ class Input {
       }
     }
   }
+  // copy assignment operator
   Input &operator=(const Input &other) {
     Input tmp(other);
     swap(*this, tmp);
@@ -56,11 +59,26 @@ class Input {
     std::swap(first.borderY, second.borderY);
   }
 
-  int uploadFile(string file, int mode);
-  int uploadMaze(FILE *fptr);
-  int uploadCave(FILE *fptr);
-  void saveFile(string file);
-  void clear();
+  void clear() {
+    if (borderX) {
+      for (int i = 0; i < row; i++) {
+        delete[] borderY[i];
+        delete[] borderX[i];
+      }
+      delete[] borderX;
+      delete[] borderY;
+      borderY = NULL;
+      borderX = NULL;
+    }
+    if (tmp) {
+      for (int i = 0; i < row; i++) delete[] tmp[i];
+      delete[] tmp;
+      tmp = NULL;
+    }
+    row = 0;
+    col = 0;
+    filename = "";
+  }
 
   int col = 0, row = 0;
   int **borderX = nullptr, **borderY = nullptr;
