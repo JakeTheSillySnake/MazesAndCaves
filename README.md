@@ -2,9 +2,11 @@
 
 _Last updated March 2025_
 
+![](src/assets/media/demo.gif)
+
 ## Introduction
 
-This document describes how to install, run, check and remove Maze on Linux and Unix-like systems. Please note that the program was written and tested on Ubuntu 22.04 LTS, so its behaviour may differ if you use other versions or OS distributions. It should work on Windows if you build with MinGW and qmake, but the UI may be wonky.
+This document describes how to install, run, check and remove Maze on Linux and Unix-like systems. Please note that the program was written and tested on Ubuntu 22.04 LTS, so its behaviour may differ if you use other versions or OS distributions.
 
 ## Installation & Running
 
@@ -34,6 +36,8 @@ Download or clone (git clone <link_to_repo>) the source repository to where you 
 
 Now the program is compiled, placing the app in a folder named `src/build/`. The app should open automatically. If you want to open it later using command line, run make maze. If there are errors, you're likely missing some packages. Check __Prerequisites__.
 
+If you're on Windows, you'll need to have MinGW installed. Then, you can build and run the app in Qt Creator (make sure the build directory in the settings is `src/build`).
+
 </br>
 
 ### Formatting
@@ -54,8 +58,6 @@ The maze is stored in a file as a number of rows and columns, as well as two mat
 
 The maze described in this file:
 
-</br>
-
 ![](src/assets/media/maze.jpg)
 
 
@@ -68,11 +70,7 @@ A cave that has passed 0 simulation steps (only initialized) is stored as a numb
 0 0 1 1
 ```
 
-</br>
-
 The cave described in this file:
-
-</br>
 
 ![](src/assets/media/cave.jpg)
 
