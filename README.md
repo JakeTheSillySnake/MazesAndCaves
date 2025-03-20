@@ -2,7 +2,7 @@
 
 _Last updated March 2025_
 
-![](src/assets/media/demo.gif)
+![](src/assets/media/demo.GIF)
 
 ## Introduction
 
