@@ -104,6 +104,14 @@ __> Maze__
 
 (e) Solve Button — _solve current maze_
 
+(f) Train Agent Button — _train agent using Q-learning method (you need to specify the end position)*_
+
+(g) Apply Agent Button — _solve maze using the trained agent (you need to specify the start position)_
+
+</br>
+
+__*Note:__ the maze and end position must stay the same during the agent's training and testing stages. If they change, the agent should be trained again.
+
 </br>
 
 __> Cave__
@@ -141,7 +149,7 @@ Then go to `localhost/maze.html` address in your preferred browser. Done!
 
 ## Structure & testing
 
-The program was made using C++17 language and standard libraries, with the interface provided by Qt. The source code can be found in `maze/backend` and `maze/frontend folders`. The backend modules can be tested with GTest: 
+The program was made using C++20 language and standard libraries, with the interface provided by Qt. The source code can be found in `maze/backend` and `maze/frontend folders`. The backend modules can be tested with GTest: 
 
 1. To run tests: `make test `
 
@@ -158,6 +166,6 @@ Running `make` or `make all` will reinstall and compile the program. You can get
 
 ## Deinstallation
 
-Simply run `make uninstall`. This will remove the `SimpleViewer/` directory but not the original download, which can be safely deleted afterwards.
+Simply run `make uninstall`. This will remove the `src/build` directory but not the original download, which can be safely deleted afterwards.
 
 If you wish to suggest an improvement or report a bug, contact me __@ginzburg_jake (Telegram) or JakeTheSillySnake (GitHub)__.
