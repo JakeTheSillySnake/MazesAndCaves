@@ -141,7 +141,7 @@ Then go to `localhost/maze.html` address in your preferred browser. Done!
 
 ## Structure & testing
 
-The program was made using C++17 language and standard libraries, with the interface provided by Qt. The source code can be found in `maze/backend` and `maze/frontend folders`. The backend modules can be tested with GTest: 
+The program was made using C++20 language and standard libraries, with the interface provided by Qt. The source code can be found in `maze/backend` and `maze/frontend folders`. The backend modules can be tested with GTest: 
 
 1. To run tests: `make test `
 
