@@ -110,7 +110,7 @@ __> Maze__
 
 </br>
 
-__*Note:__ the maze and end position must stay the same during the agent's training and testing stages. If they change, the agent should be trained again.
+__*Note:__ the maze and end position must stay the same during the agent's training and testing stages. If they change, the agent needs to be trained again.
 
 </br>
 
