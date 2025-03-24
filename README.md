@@ -104,6 +104,14 @@ __> Maze__
 
 (e) Solve Button — _solve current maze_
 
+(d) Train Agent Button — _train agent using Q-learning method (you need to specify the end position)*_
+
+(f) Apply Agent Button — _solve maze using the trained agent (you need to specify the start position)_
+
+</br>
+
+__*Note:__ the maze and end position must stay the same during the agent's training and testing stages. If they change, the agent should be trained again.
+
 </br>
 
 __> Cave__
