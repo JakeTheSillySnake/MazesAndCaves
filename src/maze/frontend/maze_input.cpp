@@ -1,7 +1,7 @@
 #include "maze.h"
 #include "ui_maze.h"
 
-void Maze::loadMaze() {
+void Maze::getMazeInfo() {
   auto fileContentReady = [this](const QString &filePath,
                                  const QByteArray &fileContent) {
     if (filePath.isEmpty()) return;
@@ -15,6 +15,8 @@ void Maze::loadMaze() {
     } else {
       drawField(MAZE_MODE);
       ui->SolveButton->setDisabled(false);
+      ui->TrainAgentButton->setDisabled(false);
+      ui->SolveAgentButton->setDisabled(true);
       solved = 0;
     }
     ui->tabWidget->setCurrentIndex(0);
@@ -22,7 +24,7 @@ void Maze::loadMaze() {
   QFileDialog::getOpenFileContent("*.txt", fileContentReady);
 }
 
-void Maze::loadCave() {
+void Maze::getCaveInfo() {
   auto fileContentReady = [this](const QString &filePath,
                                  const QByteArray &fileContent) {
     if (filePath.isEmpty()) return;
@@ -50,12 +52,12 @@ int Maze::uploadFile(QByteArray fileContent, int mode, Input *model) {
   if (model->row < 1 || model->col < 1 || model->row > 50 || model->col > 50)
     return BAD_FORMAT;
   if (mode == MAZE_MODE)
-    return uploadMaze(data, model);
+    return uploadMazeFile(data, model);
   else
-    return uploadCave(data, model);
+    return uploadCaveFile(data, model);
 }
 
-int Maze::uploadMaze(QTextStream &data, Input *model) {
+int Maze::uploadMazeFile(QTextStream &data, Input *model) {
   model->borderX = new int *[model->row];
   model->borderY = new int *[model->row];
   for (int i = 0; i < model->row; i++) {
@@ -83,7 +85,7 @@ int Maze::uploadMaze(QTextStream &data, Input *model) {
   return 0;
 }
 
-int Maze::uploadCave(QTextStream &data, Input *model) {
+int Maze::uploadCaveFile(QTextStream &data, Input *model) {
   model->tmp = new int *[model->row];
   for (int i = 0; i < model->row; i++) model->tmp[i] = new int[model->col];
   for (int i = 0; i < model->row; i++) {
@@ -102,6 +104,8 @@ void Maze::genMazeIn() {
   genMaze(ui->MazeRowsBox->value(), ui->MazeColsBox->value(), &maze);
   drawField(MAZE_MODE);
   ui->SolveButton->setDisabled(false);
+  ui->TrainAgentButton->setDisabled(false);
+  ui->SolveAgentButton->setDisabled(true);
   solved = 0;
 }
 
@@ -168,4 +172,29 @@ void Maze::solveMazeIn() {
     drawSolution(end.first, end.second, solution);
     solved = 1;
   }
+}
+
+void Maze::trainAgent() {
+  agent.LoadMaze(&maze);
+  std::pair<int, int> end(ui->SolveEndRow->value(), ui->SolveEndCol->value());
+  agent.LearnAgent(end);
+  ui->SolveAgentButton->setDisabled(false);
+}
+
+void Maze::applyAgent() {
+  std::pair<int, int> start(ui->SolveStartRow->value(),
+                            ui->SolveStartCol->value());
+  solution = agent.GetPathFromPosition(start);
+  endPoint = start;
+  if (!solution.size())
+    errorMessage(NO_SOLUTION);
+  else {
+    drawField(MAZE_MODE);
+    drawSolution(endPoint.first, endPoint.second, solution);
+    solved = 1;
+  }
+  for (int i = 0; i < (int)solution.size(); i++) {
+    qDebug() << solution[i].first << solution[i].second;
+  }
+  qDebug() << "\n";
 }

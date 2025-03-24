@@ -16,6 +16,7 @@
 #include <QPainterPath>
 #include <QTimer>
 
+#include "../backend/agent.h"
 #include "../backend/genCave.h"
 #include "../backend/genMaze.h"
 #include "../backend/solveMaze.h"
@@ -50,31 +51,38 @@ class Maze : public QMainWindow {
 
   // input processing
   int uploadFile(QByteArray fileContent, int mode, Input *model);
-  int uploadMaze(QTextStream &data, Input *model);
-  int uploadCave(QTextStream &data, Input *model);
+  int uploadMazeFile(QTextStream &data, Input *model);
+  int uploadCaveFile(QTextStream &data, Input *model);
   void setTimer();
 
  private slots:
-  void loadMaze();
-  void loadCave();
+  void getMazeInfo();
+  void getCaveInfo();
+  void saveMaze();
+
   void solveMazeIn();
+  void trainAgent();
+  void applyAgent();
+
   void genMazeIn();
   void genCaveIn();
   void genNext();
-  void saveMaze();
+  void timerAlarm();
+
   void updateBirthVal();
   void updateDeathVal();
   void toggleAutomode();
   void switchTab();
-  void timerAlarm();
 
  private:
   Ui::Maze *ui;
   QFont *font;
-  Input maze, cave;
   QErrorMessage *msg;
   QGraphicsScene *scene;
   QTimer *timer;
+
+  Input maze, cave;
+  Agent agent;
   int automode = 0, solved = 0;
   std::vector<std::pair<int, int>> solution;
   std::pair<int, int> endPoint;

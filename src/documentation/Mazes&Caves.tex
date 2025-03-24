@@ -9,21 +9,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{babel}
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 \makeatother
 
 \usepackage{babel}
@@ -50,7 +35,9 @@ if you build with MinGW and qmake, but the UI may be wonky.
 Correct compilation and running of the program depends on other utilities
 and libraries. Check that you have their latest versions before proceeding: 
 \begin{description}
-\item [{App~Compilation~\&~Running}] gcc, make, Qt5+ 
+\item [{App~Compilation~\&~Running}] gcc, make
+\item [{Desktop~Interface}] Qt5+, qmake 
+\item [{Web~Interface}] python or VS Code or emrun
 \item [{Testing}] GTest library 
 \item [{GCOV~Report}] gcov, lcov 
 \item [{Leaks~Check}] valgrind 
@@ -148,7 +135,14 @@ described above}
 \item Start \& End Boxes --- \emph{position of start \& end points of a
 maze solution (row, column)}
 \item Solve Button --- \emph{solve current maze}
+\item Train Agent Button --- \emph{train agent using Q-learning method
+(you need to specify the end position){*}}
+\item Apply Agent Button --- \emph{solve maze using the trained agent (you
+need to specify the start position)}
 \end{enumerate}
+\textbf{{*}Note: }the maze and end position must stay the same during
+the agent's training and testing stages. If they change, the agent
+needs to be trained again.
 \item \textbf{Cave}
 \begin{enumerate}
 \item Rows \& Cols Boxes --- \emph{dimensions for a cave to be generated
@@ -180,14 +174,16 @@ folder and then:
 \item Open \texttt{maze.html} using Live Server extension in VS Code, OR
 \item Run \texttt{\textcolor{black}{python}}\footnote{\texttt{\textcolor{black}{python3 in newer Unix-versions, or py on
 Windows}}}\texttt{\textcolor{black}{{} -m http.server}} inside the folder (you
-need to have Python installed)
+need to have Python installed), OR
+\item Run \texttt{<path-to-emscripten-folder>/emrun -{}-browser={[}your
+browser{]} maze.html} (you need to have EmSDK installed)
 \end{itemize}
 Then go to \texttt{\textcolor{black}{localhost/maze.html}} address
 in your preferred browser. Done!
 
 \section{Structure \& testing}
 
-The program was made using C++17 language and standard libraries,
+The program was made using C++20 language and standard libraries,
 with the interface provided by Qt. The source code can be found in
 \texttt{maze/backend} and \texttt{maze/frontend} folders. The backend
 modules can be tested with GTest: 

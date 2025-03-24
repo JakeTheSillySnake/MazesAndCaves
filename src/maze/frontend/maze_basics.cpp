@@ -24,8 +24,8 @@ void Maze::loadFont() {
 
 void Maze::connectSlots() {
   connect(ui->actionExit, SIGNAL(triggered()), this, SLOT(close()));
-  connect(ui->actionMaze, SIGNAL(triggered()), this, SLOT(loadMaze()));
-  connect(ui->actionCave, SIGNAL(triggered()), this, SLOT(loadCave()));
+  connect(ui->actionMaze, SIGNAL(triggered()), this, SLOT(getMazeInfo()));
+  connect(ui->actionCave, SIGNAL(triggered()), this, SLOT(getCaveInfo()));
   connect(ui->SolveButton, SIGNAL(clicked()), this, SLOT(solveMazeIn()));
   connect(ui->actionSaveMaze, SIGNAL(triggered()), this, SLOT(saveMaze()));
   connect(ui->SaveMazeButton, SIGNAL(clicked()), this, SLOT(saveMaze()));
@@ -38,6 +38,8 @@ void Maze::connectSlots() {
   connect(ui->tabWidget, SIGNAL(currentChanged(int)), this, SLOT(switchTab()));
   connect(ui->GenCaveButton, SIGNAL(clicked()), this, SLOT(genCaveIn()));
   connect(ui->NextStepButton, SIGNAL(clicked()), this, SLOT(genNext()));
+  connect(ui->TrainAgentButton, SIGNAL(clicked()), this, SLOT(trainAgent()));
+  connect(ui->SolveAgentButton, SIGNAL(clicked()), this, SLOT(applyAgent()));
 }
 
 void Maze::setScene() {
@@ -49,6 +51,8 @@ void Maze::setScene() {
   toggleAutomode();
   ui->NextStepButton->setDisabled(true);
   ui->SolveButton->setDisabled(true);
+  ui->TrainAgentButton->setDisabled(true);
+  ui->SolveAgentButton->setDisabled(true);
 }
 
 void Maze::errorMessage(int code) {

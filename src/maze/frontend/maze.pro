@@ -15,14 +15,16 @@ SOURCES += \
     maze_input.cpp \
     ../backend/genMaze.cpp \
     ../backend/genCave.cpp \
-    ../backend/solveMaze.cpp
+    ../backend/solveMaze.cpp \
+    ../backend/agent.cpp
 
 HEADERS += \
     maze.h \
     ../backend/model.h \
     ../backend/genMaze.h \
     ../backend/genCave.h \
-    ../backend/solveMaze.h
+    ../backend/solveMaze.h \
+    ../backend/agent.h
 
 FORMS += \
     maze.ui
