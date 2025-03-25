@@ -110,7 +110,7 @@ __> Maze__
 
 </br>
 
-__*Note:__ the maze and end position must stay the same during the agent's training and testing stages. If they change, the agent needs to be trained again.
+__*Note:__ the maze and end position must stay the same during the agent's training and testing stages. If they change, the agent needs to be trained again. The app uses multithreading during the training stage; for larger mazes, a progress bar will appear. The process may take up to a few minutes.
 
 </br>
 
@@ -144,7 +144,7 @@ Additionally, you can use the app without installing it, through a local server.
 
 • Run `<path-to-emscripten-folder>/emrun --browser=[your browser] maze.html` (you need to have EmSDK installed)
 
-Then go to `localhost/maze.html` address in your preferred browser. Done!
+Then go to `localhost/maze.html` address (currently supported browsers are Chrome, Firefox, Edge). If training the agent takes a long time (see __Usage->Action Tab->Maze__), please wait patiently and don't refresh the page.
 
 
 ## Structure & testing
