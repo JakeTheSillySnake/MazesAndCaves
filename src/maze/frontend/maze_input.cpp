@@ -175,9 +175,25 @@ void Maze::solveMazeIn() {
 }
 
 void Maze::trainAgent() {
+  ui->SolveAgentButton->setDisabled(true);
   agent.LoadMaze(&maze);
   std::pair<int, int> end(ui->SolveEndRow->value(), ui->SolveEndCol->value());
-  agent.LearnAgent(end);
+  Parameters params;
+  std::atomic_int progress{0};
+  std::thread workThread(&Agent::LearnAgent, &agent, end, &progress);
+
+  if (maze.row >= 5 || maze.col >= 5) ui->ProgessWindow->show();
+  ui->progressBar->setValue(0);
+  ui->progressBar->update();
+
+  while (progress.load(std::memory_order_relaxed) < params.epochs) {
+    std::this_thread::sleep_for(50ms);
+    ui->progressBar->setValue(progress.load(std::memory_order_relaxed));
+    ui->progressBar->update();
+    QCoreApplication::processEvents();
+  }
+  workThread.join();
+  ui->ProgessWindow->hide();
   ui->SolveAgentButton->setDisabled(false);
 }
 
@@ -193,8 +209,4 @@ void Maze::applyAgent() {
     drawSolution(endPoint.first, endPoint.second, solution);
     solved = 1;
   }
-  for (int i = 0; i < (int)solution.size(); i++) {
-    qDebug() << solution[i].first << solution[i].second;
-  }
-  qDebug() << "\n";
 }

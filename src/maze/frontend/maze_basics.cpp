@@ -49,10 +49,12 @@ void Maze::setScene() {
   QRect content = ui->graphicsView->contentsRect();
   ui->graphicsView->setSceneRect(0, 0, content.width(), content.height());
   toggleAutomode();
+
   ui->NextStepButton->setDisabled(true);
   ui->SolveButton->setDisabled(true);
   ui->TrainAgentButton->setDisabled(true);
   ui->SolveAgentButton->setDisabled(true);
+  ui->ProgessWindow->hide();
 }
 
 void Maze::errorMessage(int code) {

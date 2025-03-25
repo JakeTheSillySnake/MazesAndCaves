@@ -21,7 +21,7 @@ std::vector<pair<int, int>> Agent::GetPathFromPosition(
   while (position != end_position_ && move != maze_->col * maze_->row) {
     move++;
     int action = 0;
-    int max = Q_table_[GetQTableIndex(position)][0];
+    double max = Q_table_[GetQTableIndex(position)][0];
     for (int i = 1; i < 4; i++) {
       if (Q_table_[GetQTableIndex(position)][i] > max) {
         max = Q_table_[GetQTableIndex(position)][i];
@@ -32,32 +32,24 @@ std::vector<pair<int, int>> Agent::GetPathFromPosition(
       if (position.second - 1 >= 0 &&
           maze_->borderX[position.first][position.second - 1] != 1) {
         position.second--;
-      } else {
-        throw std::logic_error("Can't move");
       }
     }
     if (action == 1) {
       if (position.first - 1 >= 0 &&
           maze_->borderY[position.first - 1][position.second] != 1) {
         position.first--;
-      } else {
-        throw std::logic_error("Can't move");
       }
     }
     if (action == 2) {
       if (position.second + 1 < maze_->col &&
           maze_->borderX[position.first][position.second] != 1) {
         position.second++;
-      } else {
-        throw std::logic_error("Can't move");
       }
     }
     if (action == 3) {
       if (position.first + 1 < maze_->col &&
           maze_->borderY[position.first][position.second] != 1) {
         position.first++;
-      } else {
-        throw std::logic_error("Can't move");
       }
     }
     result.push_back(position);
@@ -75,7 +67,8 @@ std::vector<double> Agent::GetQCell(int i, int j) {
   }
 }
 
-void Agent::LearnAgent(std::pair<int, int> end_position) {
+void Agent::LearnAgent(std::pair<int, int> end_position,
+                       std::atomic_int* progress) {
   end_position_ = end_position;
   ResetQTable();
   double epsilon = params_.epsilon;
@@ -83,47 +76,42 @@ void Agent::LearnAgent(std::pair<int, int> end_position) {
   for (int i = 0; i < params_.epochs; i++) {
     int move{0};
     bool done{false};
-    std::pair<int, int> position{
-        std::rand() % maze_->row,
-        std::rand() % maze_->col};  // random from maze;
+    std::pair<int, int> position{std::rand() % maze_->row,
+                                 std::rand() % maze_->col};
     visited_matrix_ = std::vector<std::vector<int>>(
         maze_->row, std::vector<int>(maze_->col, 0));
     visited_matrix_[position.first][position.second] = 1;
     while (!done && move != params_.max_moves) {
       Actions action = ChooseAction(position, epsilon);
       auto result = PerformAction(position, action, end_position);
-
       std::pair<int, int> next_position = result.first;
       double reward = result.second;
 
-      // visited penalty to avoid loops?
       if (visited_matrix_[next_position.first][next_position.second] &&
           reward == penalty_.move_penalty) {
-        reward = penalty_.visited_penalty;
+        reward = penalty_.visited_penalty * 0.25 *
+                 visited_matrix_[next_position.first][next_position.second];
       } else {
-        visited_matrix_[next_position.first][next_position.second] = 1;
+        visited_matrix_[next_position.first][next_position.second]++;
       }
-
       double max_q = Q_table_[GetQTableIndex(next_position)][0];
       for (int i = 1; i < 4; i++) {
         if (Q_table_[GetQTableIndex(next_position)][i] > max_q) {
           max_q = Q_table_[GetQTableIndex(next_position)][i];
         }
       }
-
       Q_table_[GetQTableIndex(position)][static_cast<int>(action)] +=
           params_.learning_rate *
           (reward + (params_.discount * max_q) -
            Q_table_[GetQTableIndex(position)][static_cast<int>(action)]);
-
       move++;
       position = next_position;
-
       if (position == end_position) {
         done = true;
       }
     }
     epsilon = UpdateEpsilon(i);
+    progress->fetch_add(1, std::memory_order_relaxed);
   }
 }
 

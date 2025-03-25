@@ -1,9 +1,8 @@
 #ifndef __AGENT_H__
 #define __AGENT_H__
-#include <cmath>
-#include <ctime>
-#include <exception>
-#include <iostream>
+
+#include <atomic>
+#include <thread>
 #include <vector>
 
 #include "model.h"
@@ -14,17 +13,17 @@ enum class Actions { Left, Up, Right, Down };
 struct Penalties {
   double wall_penalty{-1.0};
   double visited_penalty{-0.5};
-  double target_reward{10.0};
-  double move_penalty{-0.001};  // less?
+  double move_penalty{-0.01};
+  double target_reward{100.0};
 };
 
 struct Parameters {
-  double epsilon{0.7};  // less?
+  double epsilon{0.65};
   double decay_rate{0.001};
   double learning_rate{0.25};
-  double discount{0.75};
+  double discount{0.95};
   int max_moves{10000};
-  int epochs{300000};  // more?
+  int epochs{1000000};
 };
 
 class Agent {
@@ -38,14 +37,14 @@ class Agent {
   Penalties penalty_{};
 
  public:
-  Agent(unsigned int seed = std::time({}));
-  Agent(Input* maze, unsigned int seed = std::time({}));
+  Agent(unsigned int seed = time({}));
+  Agent(Input* maze, unsigned int seed = time({}));
   ~Agent() = default;
 
   void LoadMaze(Input* maze);
   void SetupParams(Parameters params);
   void SetupPenalty(Penalties penalty);
-  void LearnAgent(std::pair<int, int> end_position);
+  void LearnAgent(std::pair<int, int> end_position, std::atomic_int* progress);
 
   std::vector<pair<int, int>> GetPathFromPosition(std::pair<int, int> position);
 

@@ -2,7 +2,7 @@
 
 HEADERS = backend/model.h backend/genMaze.h backend/genCave.h backend/solveMaze.h
 SRC = backend/genMaze.cpp backend/genCave.cpp backend/solveMaze.cpp
-FLAGS = g++ -Wall -Wextra -Werror -std=c++17
+FLAGS = g++ -Wall -Wextra -Werror -std=c++20
 
 all: clean test gcov_report
 
