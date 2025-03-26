@@ -15,8 +15,9 @@ void Maze::getMazeInfo() {
     } else {
       drawField(MAZE_MODE);
       ui->SolveButton->setDisabled(false);
-      ui->TrainAgentButton->setDisabled(false);
       ui->SolveAgentButton->setDisabled(true);
+      ui->TrainAgentButton->setDisabled(false);
+      ui->TrainAgentButton->setDisabled(false);
       solved = 0;
     }
     ui->tabWidget->setCurrentIndex(0);
@@ -179,34 +180,41 @@ void Maze::trainAgent() {
   agent.LoadMaze(&maze);
   std::pair<int, int> end(ui->SolveEndRow->value(), ui->SolveEndCol->value());
   Parameters params;
-  std::atomic_int progress{0};
-  std::thread workThread(&Agent::LearnAgent, &agent, end, &progress);
+  agent.progress.store(0);
+  agent.terminate.store(false);
+  std::thread workThread(&Agent::LearnAgent, &agent, end);
 
-  if (maze.row >= 5 || maze.col >= 5) ui->ProgessWindow->show();
+  ui->ProgessWindow->show();
   ui->progressBar->setValue(0);
   ui->progressBar->update();
 
-  while (progress.load(std::memory_order_relaxed) < params.epochs) {
+  while (agent.progress.load(std::memory_order_relaxed) < params.epochs && !agent.terminate.load()) {
     std::this_thread::sleep_for(50ms);
-    ui->progressBar->setValue(progress.load(std::memory_order_relaxed));
+    ui->progressBar->setValue(agent.progress.load(std::memory_order_relaxed));
     ui->progressBar->update();
     QCoreApplication::processEvents();
   }
   workThread.join();
   ui->ProgessWindow->hide();
-  ui->SolveAgentButton->setDisabled(false);
+  if (!agent.terminate.load())
+    ui->SolveAgentButton->setDisabled(false);
 }
 
 void Maze::applyAgent() {
   std::pair<int, int> start(ui->SolveStartRow->value(),
-                            ui->SolveStartCol->value());
+                            ui->SolveStartCol->value()),
+      end = endPoint;
   solution = agent.GetPathFromPosition(start);
   endPoint = start;
-  if (!solution.size())
+  if (solution[0] == solution[solution.size() - 1] && end != start)
     errorMessage(NO_SOLUTION);
   else {
     drawField(MAZE_MODE);
     drawSolution(endPoint.first, endPoint.second, solution);
     solved = 1;
   }
+}
+
+void Maze::cancelAgent() {
+  agent.terminate.store(true);
 }

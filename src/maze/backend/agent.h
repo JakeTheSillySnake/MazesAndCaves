@@ -37,6 +37,9 @@ class Agent {
   Penalties penalty_{};
 
  public:
+  std::atomic_int progress{0};
+  std::atomic_bool terminate{false};
+
   Agent(unsigned int seed = time({}));
   Agent(Input* maze, unsigned int seed = time({}));
   ~Agent() = default;
@@ -44,7 +47,7 @@ class Agent {
   void LoadMaze(Input* maze);
   void SetupParams(Parameters params);
   void SetupPenalty(Penalties penalty);
-  void LearnAgent(std::pair<int, int> end_position, std::atomic_int* progress);
+  void LearnAgent(std::pair<int, int> end_position);
 
   std::vector<pair<int, int>> GetPathFromPosition(std::pair<int, int> position);
 

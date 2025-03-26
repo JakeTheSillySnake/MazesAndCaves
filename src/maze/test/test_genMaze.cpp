@@ -1,27 +1,22 @@
 #include <gtest/gtest.h>
 
 #include "../backend/genMaze.h"
+#include "../backend/solveMaze.h"
 
 int check_no_access(Input *in) {
-  int no_access = 0;
   for (int i = 0; i < in->row; i++) {
-    for (int j = 0; j < in->col; j++) {
-      int walls = 0;
-      if (in->borderX[i][j]) walls++;
-      if (in->borderY[i][j]) walls++;
-      if (j == 0)
-        walls++;
-      else if (in->borderX[i][j - 1])
-        walls++;
-      if (i == 0)
-        walls++;
-      else if (in->borderY[i - 1][j])
-        walls++;
-
-      if (walls > 3) no_access++;
-    }
+    std::pair<int, int> start(i, 0),
+    end(i, in->col - 1);
+    std::vector<pair<int, int>> path = SolveMaze(start, end, in);
+    if (!path.size()) return 1;
   }
-  return no_access;
+  for (int i = 0; i < in->col; i++) {
+    std::pair<int, int> start(0, i),
+    end(i, in->row - 1);
+    std::vector<pair<int, int>> path = SolveMaze(start, end, in);
+    if (!path.size()) return 1;
+  }
+  return 0;
 }
 
 int check_loops(Input *in) {

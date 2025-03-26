@@ -63,6 +63,7 @@ class Maze : public QMainWindow {
   void solveMazeIn();
   void trainAgent();
   void applyAgent();
+  void cancelAgent();
 
   void genMazeIn();
   void genCaveIn();

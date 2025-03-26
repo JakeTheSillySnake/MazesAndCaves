@@ -67,13 +67,12 @@ std::vector<double> Agent::GetQCell(int i, int j) {
   }
 }
 
-void Agent::LearnAgent(std::pair<int, int> end_position,
-                       std::atomic_int* progress) {
+void Agent::LearnAgent(std::pair<int, int> end_position) {
   end_position_ = end_position;
   ResetQTable();
   double epsilon = params_.epsilon;
 
-  for (int i = 0; i < params_.epochs; i++) {
+  for (int i = 0; i < params_.epochs && !terminate.load(); i++) {
     int move{0};
     bool done{false};
     std::pair<int, int> position{std::rand() % maze_->row,
@@ -111,7 +110,7 @@ void Agent::LearnAgent(std::pair<int, int> end_position,
       }
     }
     epsilon = UpdateEpsilon(i);
-    progress->fetch_add(1, std::memory_order_relaxed);
+    progress.fetch_add(1, std::memory_order_relaxed);
   }
 }
 

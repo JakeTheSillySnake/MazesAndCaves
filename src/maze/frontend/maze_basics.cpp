@@ -40,6 +40,7 @@ void Maze::connectSlots() {
   connect(ui->NextStepButton, SIGNAL(clicked()), this, SLOT(genNext()));
   connect(ui->TrainAgentButton, SIGNAL(clicked()), this, SLOT(trainAgent()));
   connect(ui->SolveAgentButton, SIGNAL(clicked()), this, SLOT(applyAgent()));
+  connect(ui->CancelAgentButton, SIGNAL(clicked()), this, SLOT(cancelAgent()));
 }
 
 void Maze::setScene() {
