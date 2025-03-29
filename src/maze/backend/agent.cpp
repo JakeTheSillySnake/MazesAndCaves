@@ -1,17 +1,72 @@
 #include "agent.h"
 
+/**
+ * @brief Agent basic constructor
+ *
+ * Construct agent with empty maze
+ *
+ * @param seed random seed
+ *
+ */
+
 Agent::Agent(unsigned int seed) { srand(seed); }
 
+/**
+ * @brief Agent additional constructor
+ *
+ * Construct agent with given maze and see
+ * @param maze  Given maze
+ * @param seed random seed
+ *
+ */
+
 Agent::Agent(Input* maze, unsigned int seed) : Agent(seed) { maze_ = maze; }
+
+/**
+ * @brief Load maze
+ *
+ * Load maze in agent
+ * @param maze  Given maze
+ *
+ */
 
 void Agent::LoadMaze(Input* maze) {
   maze_ = maze;
   ResetQTable();
 }
 
+/**
+ * @brief Setup paramaterers
+ *
+ * Setup given parameters for agent
+ * @param params Given params
+ *
+ */
+
 void Agent::SetupParams(Parameters params) { params_ = params; }
 
+/**
+ * @brief Setup paramaterers
+ *
+ * Сonfigures the penalty values for the agent, such as move penalty, wall
+ * penalty, visited penalty, and target reward.
+ * @param penalty given penalty
+ *
+ */
+
 void Agent::SetupPenalty(Penalties penalty) { penalty_ = penalty; }
+
+/**
+ * @brief Computes the optimal path from a given starting position to the end
+ * position using the learned Q-Table.
+ *
+ *
+ * @param position start position
+ *
+ * @return A vector of positions representing the path. If no valid path is
+ * found, the vector is cleared.
+ *
+ */
 
 std::vector<pair<int, int>> Agent::GetPathFromPosition(
     std::pair<int, int> position) {
@@ -54,10 +109,32 @@ std::vector<pair<int, int>> Agent::GetPathFromPosition(
     }
     result.push_back(position);
   }
+  if (move == maze_->col * maze_->row) {
+    result.clear();
+  }
   return result;
 }
+/**
+ * @brief Retrieves the current Q-Table, which contains the learned Q-values for
+ * each state-action pair.
+ *
+ *
+ * @return A 2D vector representing the Q-Table.
+ *
+ */
 
 std::vector<std::vector<double>> Agent::GetQTable() { return Q_table_; }
+
+/**
+ * @brief Retrieves the Q-values for a specific cell in the maze.
+ *
+ * @param i Row index
+ * @param j Col index
+ *
+ * @return A vector of Q-values for the specified cell. If the cell is invalid,
+ * an empty vector is returned.
+ *
+ */
 
 std::vector<double> Agent::GetQCell(int i, int j) {
   try {
@@ -66,6 +143,15 @@ std::vector<double> Agent::GetQCell(int i, int j) {
     return std::vector<double>(0);
   }
 }
+
+/**
+ * @brief Trains the agent using Q-Learning over multiple epochs. The agent
+ * learns to navigate from random starting positions to the specified end
+ * position.
+ *
+ * @param end_position end position
+ *
+ */
 
 void Agent::LearnAgent(std::pair<int, int> end_position) {
   end_position_ = end_position;
@@ -114,13 +200,37 @@ void Agent::LearnAgent(std::pair<int, int> end_position) {
   }
 }
 
+/**
+ * @brief Resets the Q-Table to zero for all state-action pairs. This is
+ * typically done when loading a new maze.
+ *
+ */
+
 void Agent::ResetQTable() {
   Q_table_ = std::vector<std::vector<double>>(maze_->col * maze_->row,
                                               std::vector<double>(4, 0));
 }
+
+/**
+ * @brief Converts a maze position (row, column) into a single index for
+ accessing the Q-Table.
+ * @param position The position in the maze.
+ *
+ * @return An integer index corresponding to the position in the Q-Table.
+ */
 int Agent::GetQTableIndex(std::pair<int, int> position) {
   return position.first * maze_->col + position.second;
 }
+
+/**
+ * @brief Selects an action for the agent based on the epsilon-greedy policy.
+ * With probability epsilon, a random action is chosen; otherwise, the action
+ * with the highest Q-value is selected.
+ *
+ * @param position The current position in the maze.
+ * @param epsilon The exploration rate.
+ * @return The selected action
+ */
 
 Actions Agent::ChooseAction(std::pair<int, int> position, double epsilon) {
   if (static_cast<double>(std::rand()) / RAND_MAX < epsilon) {
@@ -138,6 +248,17 @@ Actions Agent::ChooseAction(std::pair<int, int> position, double epsilon) {
 
   return static_cast<Actions>(action);
 }
+
+/**
+ * @brief Executes the given action in the maze and calculates the resulting
+ * position and reward.
+ *
+ * @param position The current position in the maze.
+ * @param action The action to perform
+ * @param end_position The target position in the maze.
+ *
+ * @return A pair containing the new position and the reward received.
+ */
 
 std::pair<pair<int, int>, double> Agent::PerformAction(
     pair<int, int> position, Actions action, pair<int, int> end_position) {
@@ -181,6 +302,15 @@ std::pair<pair<int, int>, double> Agent::PerformAction(
 
   return {position, reward};
 }
+
+/**
+ * @brief Updates the exploration rate (epsilon) based on the current epoch.
+ * Epsilon decreases over time to reduce exploration and increase exploitation.
+ *
+ * @param position  The current training epoch.
+ *
+ * @return The updated value of epsilon
+ */
 
 double Agent::UpdateEpsilon(int current_epoch) {
   double epsilon = params_.epsilon - params_.decay_rate * current_epoch;

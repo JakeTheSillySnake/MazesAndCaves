@@ -1334,14 +1334,6 @@ background-color: rgb(30, 32, 25);</string>
     <string>Ctrl+X</string>
    </property>
   </action>
-  <action name="actionSolve_current_maze">
-   <property name="text">
-    <string>Solve maze</string>
-   </property>
-   <property name="shortcut">
-    <string>Ctrl+O</string>
-   </property>
-  </action>
   <action name="actionMaze">
    <property name="text">
     <string>Upload Maze</string>

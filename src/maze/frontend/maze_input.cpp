@@ -188,7 +188,8 @@ void Maze::trainAgent() {
   ui->progressBar->setValue(0);
   ui->progressBar->update();
 
-  while (agent.progress.load(std::memory_order_relaxed) < params.epochs && !agent.terminate.load()) {
+  while (agent.progress.load(std::memory_order_relaxed) < params.epochs &&
+         !agent.terminate.load()) {
     std::this_thread::sleep_for(50ms);
     ui->progressBar->setValue(agent.progress.load(std::memory_order_relaxed));
     ui->progressBar->update();
@@ -196,8 +197,7 @@ void Maze::trainAgent() {
   }
   workThread.join();
   ui->ProgessWindow->hide();
-  if (!agent.terminate.load())
-    ui->SolveAgentButton->setDisabled(false);
+  if (!agent.terminate.load()) ui->SolveAgentButton->setDisabled(false);
 }
 
 void Maze::applyAgent() {
@@ -215,6 +215,4 @@ void Maze::applyAgent() {
   }
 }
 
-void Maze::cancelAgent() {
-  agent.terminate.store(true);
-}
+void Maze::cancelAgent() { agent.terminate.store(true); }

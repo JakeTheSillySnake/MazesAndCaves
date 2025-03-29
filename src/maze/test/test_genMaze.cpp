@@ -5,14 +5,12 @@
 
 int check_no_access(Input *in) {
   for (int i = 0; i < in->row; i++) {
-    std::pair<int, int> start(i, 0),
-    end(i, in->col - 1);
+    std::pair<int, int> start(i, 0), end(i, in->col - 1);
     std::vector<pair<int, int>> path = SolveMaze(start, end, in);
     if (!path.size()) return 1;
   }
   for (int i = 0; i < in->col; i++) {
-    std::pair<int, int> start(0, i),
-    end(i, in->row - 1);
+    std::pair<int, int> start(0, i), end(i, in->row - 1);
     std::vector<pair<int, int>> path = SolveMaze(start, end, in);
     if (!path.size()) return 1;
   }
@@ -53,7 +51,7 @@ TEST(test_genMaze, maze_1x2) {
   genMaze(1, 2, &in);
   ASSERT_EQ(in.row, 1);
   ASSERT_EQ(in.col, 2);
-  ASSERT_EQ(check_no_access(&in), 0);
+  ASSERT_EQ(in.borderX[0][0], 0);
   ASSERT_EQ(check_loops(&in), 0);
 }
 
@@ -62,7 +60,7 @@ TEST(test_genMaze, maze_2x1) {
   genMaze(2, 1, &in);
   ASSERT_EQ(in.row, 2);
   ASSERT_EQ(in.col, 1);
-  ASSERT_EQ(check_no_access(&in), 0);
+  ASSERT_EQ(in.borderY[0][0], 0);
   ASSERT_EQ(check_loops(&in), 0);
 }
 
