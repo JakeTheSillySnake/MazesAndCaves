@@ -169,3 +169,8 @@ Running `make` or `make all` will reinstall and compile the program. You can get
 Simply run `make uninstall`. This will remove the `src/build` directory but not the original download, which can be safely deleted afterwards.
 
 If you wish to suggest an improvement or report a bug, contact me __@ginzburg_jake (Telegram) or JakeTheSillySnake (GitHub)__.
+
+
+## Acknowledgements
+
+Big thanks to @reginiar (School 21) for developing the agent & solveMaze modules.
