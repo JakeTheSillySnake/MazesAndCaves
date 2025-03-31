@@ -27,6 +27,7 @@ uninstall: clean_build
 
 build_maze:
 	mkdir ../build
+#	qmake6 frontend/maze.pro -o ../build/Makefile
 	qmake frontend/maze.pro -o ../build/Makefile
 	cd ../build; make && make clean
 
